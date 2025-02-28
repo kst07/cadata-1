@@ -1,0 +1,59 @@
+.bb {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f6eee0;
+  box-sizing: border-box;
+}
+
+.my {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+}
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 10px rgba(115, 70, 34, 0.8), 0 0 20px rgba(115, 70, 34, 0.6), 0 0 30px rgba(115, 70, 34, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(115, 70, 34, 1), 0 0 30px rgba(115, 70, 34, 0.8), 0 0 50px rgba(115, 70, 34, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(115, 70, 34, 0.8), 0 0 20px rgba(115, 70, 34, 0.6), 0 0 30px rgba(115, 70, 34, 0.4);
+  }
+}
+.whitebox {
+  padding: 48px;
+  border-radius: 20px;
+  animation: glow 3s infinite alternate;
+  
+}
+.myForm, 
+.myButton {
+    width: 100%;
+    max-width: 30.
+    0px;
+    margin: 2 ;
+    
+}
+
+.itemkbox {
+  margin-bottom: 1.2rem;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content-container {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.center-content {
+  margin-left: 240px; /* ปรับตามความกว้างของ Navbar */
+  transition: margin-left 0.3s ease-in-out;
+}
