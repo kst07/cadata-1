@@ -22,7 +22,8 @@ import GroupIcon from "@mui/icons-material/Group"
 import LogoutIcon from "@mui/icons-material/Logout"
 import MenuIcon from "@mui/icons-material/Menu"
 import Snackbar from "@mui/material/Snackbar"
-import Alert from "@mui/material/Alert" // เพิ่ม Alert สำหรับแจ้งเตือน
+import Alert from "@mui/material/Alert"
+import Avatar from "@mui/material/Avatar" // เพิ่ม Avatar
 import AxiosInstance from './AxiosInstance'
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
@@ -37,30 +38,30 @@ export default function Navbar(props) {
   const [openSummary, setOpenSummary] = React.useState(false)
   const [openProducts, setOpenProducts] = React.useState(false)
   const [openDrawer, setOpenDrawer] = React.useState(true)
-  const [openSnackbar, setOpenSnackbar] = React.useState(false)// สถานะ Snackbar
-  const [snackbarMessage, setSnackbarMessage] = React.useState("") // ข้อความ Snackbar
-  const [snackbarSeverity, setSnackbarSeverity] = React.useState("success") // ประเภท Snackbar (success, error, info, warning)
+  const [openSnackbar, setOpenSnackbar] = React.useState(false)
+  const [snackbarMessage, setSnackbarMessage] = React.useState("")
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState("success")
 
   const logoutUser = () => {
     AxiosInstance.post("api/logout/")
       .then(() => {
         localStorage.removeItem("Token")
-        setSnackbarMessage("ล็อกเอาท์สำเร็จ") // ตั้งค่าข้อความแจ้งเตือน
-        setSnackbarSeverity("success") // ตั้งค่าประเภทแจ้งเตือน
-        setOpenSnackbar(true); // เปิด Snackbar
+        setSnackbarMessage("ล็อกเอาท์สำเร็จ")
+        setSnackbarSeverity("success")
+        setOpenSnackbar(true);
         setTimeout(() => {
           navigate('/')
         }, 700)
       })
       .catch((error) => {
-        setSnackbarMessage("เกิดข้อผิดพลาดในการล็อกเอาท์")// ตั้งค่าข้อความแจ้งเตือน
-        setSnackbarSeverity("error") // ตั้งค่าประเภทแจ้งเตือน
-        setOpenSnackbar(true) // เปิด Snackbar
+        setSnackbarMessage("เกิดข้อผิดพลาดในการล็อกเอาท์")
+        setSnackbarSeverity("error")
+        setOpenSnackbar(true)
       })
   }
 
   const handleCloseSnackbar = () => {
-    setOpenSnackbar(false); // ปิด Snackbar
+    setOpenSnackbar(false);
   }
 
   const toggleDrawer = () => {
@@ -76,33 +77,79 @@ export default function Navbar(props) {
           zIndex: (theme) => theme.zIndex.drawer + 1,
           background: "linear-gradient(to right, #4E342E, #6D4C41, #8D6E63)",
           boxShadow: "0px 5px 8px rgba(0, 0, 0, 0.5)",
+          '& .MuiTypography-body1': {
+            color: '#D7CCC8'
+          }
         }}
       >
         <Toolbar>
-          <MenuIcon sx={{ mr: 2, cursor: "pointer" }} onClick={toggleDrawer} />
-          <Typography variant="h6" noWrap component="div"
-            sx={{ display: "flex", alignItems: "center", fontFamily: "Pacifico, cursive" }}
+          <MenuIcon 
+            sx={{ 
+              mr: 2, 
+              cursor: "pointer", 
+              color: '#D7CCC8',
+              '&:hover': { color: 'white' } 
+            }} 
+            onClick={toggleDrawer} 
+          />
+          <Typography 
+            variant="h6" 
+            noWrap 
+            component="div"
+            sx={{ 
+              display: "flex", 
+              alignItems: "center", 
+              fontFamily: "Pacifico, cursive",
+              color: '#D7CCC8'
+            }}
           >
             <CoffeeIcon sx={{ marginRight: 2 }} /> Coffee Admin
           </Typography>
+          
           <Box sx={{ flexGrow: 1 }} />
-          <Typography variant="body1" sx={{ mr: 2 }}>
-            {username}
-          </Typography>
-          <LogoutIcon sx={{ cursor: "pointer" }} onClick={logoutUser} />
+          
+          {/* ส่วนแสดงโปรไฟล์และชื่อผู้ใช้ */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2,
+            paddingRight: 2 
+          }}>
+            <Avatar 
+              sx={{ 
+                bgcolor: '#D7CCC8', 
+                width: 40, 
+                height: 40, 
+                fontWeight: 'bold',
+                color: '#4E342E'
+              }}
+            >
+              {username?.charAt(0).toUpperCase()}
+            </Avatar>
+            <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+              {username}
+            </Typography>
+            <LogoutIcon 
+              sx={{ 
+                cursor: "pointer", 
+                color: '#D7CCC8',
+                '&:hover': { color: 'white' } 
+              }} 
+              onClick={logoutUser} 
+            />
+          </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Snackbar สำหรับแจ้งเตือน */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} // กำหนดตำแหน่งตรงกลางด้านบน
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert
           onClose={handleCloseSnackbar}
-          severity={snackbarSeverity} // กำหนดประเภทแจ้งเตือน (success, error, info, warning)
+          severity={snackbarSeverity}
           sx={{ width: "100%" }}
         >
           {snackbarMessage}
@@ -149,7 +196,6 @@ export default function Navbar(props) {
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
           <List>
-            {/* Home */}
             <ListItem disablePadding>
               <ListItemButton
                 component={Link}
@@ -178,7 +224,6 @@ export default function Navbar(props) {
               </ListItemButton>
             </ListItem>
 
-            {/* Products */}
             <ListItemButton onClick={() => setOpenProducts(!openProducts)}>
               <ListItemIcon>
                 <MenuBookIcon sx={{ color: "#6d4c41" }} />
@@ -238,71 +283,11 @@ export default function Navbar(props) {
               </List>
             </Collapse>
 
-            {/* Summary */}
-            <ListItemButton onClick={() => setOpenSummary(!openSummary)}>
-              <ListItemIcon>
-                <BarChartIcon sx={{ color: "#6d4c41" }} />
-              </ListItemIcon>
-              <ListItemText primary="สรุปข้อมูล" />
-              {openSummary ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-            <Collapse in={openSummary} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItemButton
-                  component={Link}
-                  to="/salesSummary"
-                  selected={"/salesSummary" === path}
-                  sx={{
-                    pl: 14,
-                    "&:hover": {
-                      backgroundColor: "#8D6E69",
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
-                      borderRadius: "10px",
-                    },
-                    "&.Mui-selected": {
-                      backgroundColor: "#6d4c41",
-                      color: "white",
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
-                      borderRadius: "10px",
-                    },
-                    transition: "all 0.3s ease-in-out",
-                    margin: "2px 0",
-                  }}
-                >
-                  <ListItemText primary="สรุปยอดขาย" />
-                </ListItemButton>
-                <ListItemButton
-                  component={Link}
-                  to="/customerSummary"
-                  selected={"/customerSummary" === path}
-                  sx={{
-                    pl: 14,
-                    "&:hover": {
-                      backgroundColor: "#8D6E69",
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
-                      borderRadius: "10px",
-                    },
-                    "&.Mui-selected": {
-                      backgroundColor: "#6d4c41",
-                      color: "white",
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
-                      borderRadius: "10px",
-                    },
-                    transition: "all 0.3s ease-in-out",
-                    margin: "2px 0",
-                  }}
-                >
-                  <ListItemText primary="สรุปลูกค้า" />
-                </ListItemButton>
-              </List>
-            </Collapse>
-
-            {/* Customers */}
             <ListItem disablePadding>
               <ListItemButton
                 component={Link}
-                to="/customers"
-                selected={"/customers" === path}
+                to="/salesSummary"
+                selected={"/salesSummary" === path}
                 sx={{
                   "&:hover": {
                     backgroundColor: "#8D6E69",
@@ -320,26 +305,26 @@ export default function Navbar(props) {
                 }}
               >
                 <ListItemIcon>
-                  <GroupIcon sx={{ color: "/customers" === path ? "white" : "#6d4c41" }} />
+                  <BarChartIcon sx={{ color: "/salesSummary" === path ? "white" : "#6d4c41" }} />
                 </ListItemIcon>
-                <ListItemText primary="ลูกค้า" />
+                <ListItemText primary="สรุปยอดขาย" />
               </ListItemButton>
             </ListItem>
+
           </List>
         </Box>
       </Drawer>
 
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
           width: '100%',
-          minHeight: '100vh', // ทำให้กรอบเต็มความสูงของหน้าจอ
+          minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center', // จัดให้อยู่กลางแนวนอน
-          alignItems: 'center', // จัดให้อยู่กลางแนวตั้ง
-          padding: '20px', // เพิ่มระยะห่างจากขอบ
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '20px',
           boxSizing: 'border-box',
         }}
       >

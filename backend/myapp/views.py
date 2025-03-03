@@ -16,6 +16,8 @@ from knox.models import AuthToken
 from rest_framework import viewsets, serializers, permissions
 from django.utils.timezone import now
 from django.utils import timezone
+from rest_framework.decorators import action
+
 
 
 @api_view(['POST'])
@@ -60,7 +62,13 @@ def logout_view(request):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def summary(self, request):
+        total_sales = Sale.objects.filter(date_today=True).count()  # ตัวอย่างการคำนวณยอดขาย
+        total_items = Product.objects.count()
+        return Response({'total_sales': total_sales, 'total_items': total_items})
 
 
 class SaleViewSet(viewsets.ModelViewSet):
@@ -95,3 +103,6 @@ class BulkSaleViewSet(viewsets.ViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+

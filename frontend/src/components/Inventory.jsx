@@ -6,7 +6,6 @@ import {
 } from '@mui/material';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import jsPDF from 'jspdf'; // สำหรับสร้าง PDF
 
 const categories = [
     { label: "ทั้งหมด", value: "all" },
@@ -26,8 +25,8 @@ const Inventory = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [cart, setCart] = useState([]);
-    const [showReceipt, setShowReceipt] = useState(false); // สถานะแสดงสลิป
-    const [receiptData, setReceiptData] = useState(null); // ข้อมูลสลิป
+    const [showReceipt, setShowReceipt] = useState(false);
+    const [receiptData, setReceiptData] = useState(null);
 
     useEffect(() => {
         fetchProducts();
@@ -82,7 +81,7 @@ const Inventory = () => {
                 setSnackbarMessage('ชำระเงินเรียบร้อยแล้ว');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
-                setShowReceipt(true); // แสดงสลิปหลังชำระเงิน
+                setShowReceipt(true);
                 setReceiptData({
                     items: cart,
                     total: cart.reduce((total, item) => total + item.price * item.quantity, 0),
@@ -112,25 +111,51 @@ const Inventory = () => {
         ? products
         : products.filter(product => product.category === selectedCategory);
 
-    // ฟังก์ชันสำหรับพิมพ์สลิปเป็น PDF
     const handlePrintReceipt = () => {
-        const doc = new jsPDF();
+        if (!receiptData) return;
 
-        doc.setFontSize(18);
-        doc.text("สลิปการชำระเงิน", 10, 10);
-        doc.setFontSize(12);
+        const content = `
+            <html>
+                <head>
+                    <title>ใบเสร็จ</title>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+                        body { font-family: 'Sarabun', sans-serif; padding: 20px; }
+                        h1 { color: #4E342E; text-align: center; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #6d4c41; color: white; }
+                        .total { font-weight: bold; margin-top: 10px; }
+                        .date-time { margin-top: 5px; font-size: 0.9em; }
+                    </style>
+                </head>
+                <body>
+                    <h1>สลิปการชำระเงิน</h1>
+                    <table>
+                        <tr>
+                            <th>สินค้า</th>
+                            <th>จำนวน</th>
+                            <th>ราคา</th>
+                        </tr>
+                        ${receiptData.items.map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.price * item.quantity} บาท</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                    <div class="total">ยอดรวม: ${receiptData.total} บาท</div>
+                    <div class="date-time">วันที่: ${receiptData.date}</div>
+                    <div class="date-time">เวลา: ${receiptData.time}</div>
+                </body>
+            </html>
+        `;
 
-        let y = 20;
-        receiptData.items.forEach((item, index) => {
-            doc.text(`${item.name} x ${item.quantity} = ${item.price * item.quantity} บาท`, 10, y);
-            y += 10;
-        });
-
-        doc.text(`ยอดรวม: ${receiptData.total} บาท`, 10, y + 10);
-        doc.text(`วันที่: ${receiptData.date}`, 10, y + 20);
-        doc.text(`เวลา: ${receiptData.time}`, 10, y + 30);
-
-        doc.save("receipt.pdf"); // บันทึกไฟล์ PDF
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(content);
+        printWindow.document.close();
+        printWindow.print();
     };
 
     return (
@@ -155,8 +180,8 @@ const Inventory = () => {
                     align="center"
                     gutterBottom
                     sx={{
-                        fontWeight: "bold", 
-                        textAlign: "center", 
+                        fontWeight: "bold",
+                        textAlign: "center",
                         mb: 3,
                         mt: 2,
                         justifyContent: 'center',
@@ -343,7 +368,6 @@ const Inventory = () => {
                                 )}
                             </Paper>
 
-                            {/* ปุ่มแสดงสลิป */}
                             {showReceipt && (
                                 <Button
                                     variant="contained"
@@ -368,7 +392,6 @@ const Inventory = () => {
                 )}
             </Container>
 
-            {/* Modal สำหรับแสดงสลิป */}
             <Modal
                 open={showReceipt}
                 onClose={() => setShowReceipt(false)}
@@ -425,9 +448,9 @@ const Inventory = () => {
                             },
                             mt: 2,
                         }}
-                        onClick={handlePrintReceipt} // ปุ่มพิมพ์ PDF
+                        onClick={handlePrintReceipt}
                     >
-                        พิมพ์สลิป (PDF)
+                        พิมพ์สลิป
                     </Button>
                 </Box>
             </Modal>

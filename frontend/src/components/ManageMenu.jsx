@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import AxiosInstance from './AxiosInstance';
-import {Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,Button,IconButton,Dialog,DialogTitle,DialogContent,DialogActions,TextField,
-  Typography,Container,Box,MenuItem,Select,FormControl,InputLabel,Snackbar,Alert,Pagination,Divider} from '@mui/material';
+import {
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
+  Typography, Container, Box, MenuItem, Select, FormControl, InputLabel, Snackbar, Alert, Pagination, Divider
+} from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const categories = [
   { value: 'coffee', label: 'กาแฟ' },
@@ -74,7 +77,7 @@ const ManageMenu = () => {
       return;
     }
 
-    const apiCall = isEditMode 
+    const apiCall = isEditMode
       ? AxiosInstance.put(`/products/${currentProduct.id}/`, currentProduct)
       : AxiosInstance.post('/products/', currentProduct);
 
@@ -108,22 +111,18 @@ const ManageMenu = () => {
   return (
     <Box sx={{
       width: '100%',
-      minHeight: '50vh', // ทำให้กรอบเต็มความสูงของหน้าจอ
+      minHeight: '50vh',
       display: 'flex',
-      
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#f0f0f0', // สีพื้นหลังเทา
-      padding: '10px', // เพิ่มระยะห่างจากขอบ
-      maxWidth: '1200px', // กำหนดความกว้างสูงสุด
+      backgroundColor: '#f0f0f0',
+      padding: '10px',
+      maxWidth: '1200px',
       margin: '5px 30px 190px 252px',
-      borderRadius: '10px' ,
-
-      
-
+      borderRadius: '10px',
     }}>
-      <Container maxWidth="lg" >
+      <Container maxWidth="lg">
         <Typography variant="h3" align="center" gutterBottom sx={{
           marginTop: 1,
           fontWeight: 'bold',
@@ -131,14 +130,16 @@ const ManageMenu = () => {
           fontFamily: 'cursive',
           fontSize: '3rem',
           textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)',
-
         }}>
           Manage Menu
         </Typography>
-        <Divider sx={{ mb: 2}} />
+        <Divider sx={{ mb: 2 }} />
 
         <Button
           variant="contained"
+          component={motion.button}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           sx={{
             backgroundColor: '#6d4c41',
             color: '#fff',
@@ -157,7 +158,7 @@ const ManageMenu = () => {
         <TableContainer component={Paper} sx={{ boxShadow: 1, borderRadius: '16px', overflow: 'hidden' }}>
           <Table>
             <TableHead>
-              <TableRow sx={{ backgroundColor: '#6d4c41' , fontWeight: 'bold'}}>
+              <TableRow sx={{ backgroundColor: '#6d4c41', fontWeight: 'bold' }}>
                 <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>ID</TableCell>
                 <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Name</TableCell>
                 <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Image</TableCell>
@@ -168,15 +169,22 @@ const ManageMenu = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {currentProducts.map(product => (
-                <TableRow key={product.id} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#fafafa' } }}>
+              {currentProducts.map((product, index) => (
+                <TableRow
+                  key={product.id}
+                  component={motion.tr}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  sx={{ '&:nth-of-type(odd)': { backgroundColor: '#fafafa' } }}
+                >
                   <TableCell>{product.id}</TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>
                     <img
                       src={product.image || 'https://via.placeholder.com/150'}
                       alt={product.name}
-                      style={{ width: '69px', height: '50px', borderRadius: '8px' , objectFit: 'cover', objectPosition: 'center' }}
+                      style={{ width: '69px', height: '50px', borderRadius: '8px', objectFit: 'cover', objectPosition: 'center' }}
                     />
                   </TableCell>
                   <TableCell>{getCategoryLabel(product.category)}</TableCell>
@@ -205,94 +213,124 @@ const ManageMenu = () => {
         </TableContainer>
 
         {products.length > 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3,  }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
             <Pagination
               count={totalPages}
               page={currentPage}
               onChange={(event, page) => setCurrentPage(page)}
               sx={{
-                '& .MuiPaginationItem-root': { color: '#6d4c41' , fontWeight: 'bold', },
+                '& .MuiPaginationItem-root': { color: '#6d4c41', fontWeight: 'bold' },
                 '& .Mui-selected': { backgroundColor: '#qq', color: '#3e2723', fontWeight: 'bold' },
               }}
+              component={motion.div}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             />
           </Box>
         )}
 
-        <Dialog open={openDialog} onClose={handleDialogClose}>
-          <DialogTitle sx={{ backgroundColor: '#6d4c41', color: '#fff' }}>
-            {isEditMode ? 'Edit Product' : 'Add Product'}
-          </DialogTitle>
-          <DialogContent sx={{ padding: 2, backgroundColor: '#f4f1ea' , borderRadius: '16px'}}>
-            <TextField
-              name="name"
-              label="Name"
-              value={currentProduct?.name || ''}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              required
-            />
-            <FormControl fullWidth margin="normal" required>
-              <InputLabel>Category</InputLabel>
-              <Select
-                name="category"
-                value={currentProduct?.category || ''}
-                onChange={handleInputChange}
-                label="Category"
-              >
-                {categories.map(category => (
-                  <MenuItem key={category.value} value={category.value}>
-                    {category.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              name="price"
-              label="Price"
-              type="number"
-              value={currentProduct?.price || ''}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              required
-            />
-            <TextField
-              name="stock"
-              label="Stock"
-              type="number"
-              value={currentProduct?.stock || ''}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              required
-            />
-            <TextField
-              name="image"
-              label="Image URL"
-              value={currentProduct?.image || ''}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-          </DialogContent>
-          <DialogActions sx={{ backgroundColor: '#f4f1ea', padding: 1 ,}}>
-            <Button onClick={handleDialogClose} sx={{ color: '#6d4c41', '&:hover': { color: '#8d6e63' } }}>Cancel</Button>
-            <Button onClick={handleSave} sx={{ 
-              backgroundColor: '#6d4c41', 
-              color: '#fff', 
-              '&:hover': { backgroundColor: '#8d6e63' } 
-            }}>
-              {isEditMode ? 'Update' : 'Save'}
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <AnimatePresence>
+          {openDialog && (
+            <Dialog
+              open={openDialog}
+              onClose={handleDialogClose}
+              component={motion.div}
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -50 }}
+              transition={{ duration: 0.3 }}
+            >
+              <DialogTitle sx={{ backgroundColor: '#6d4c41', color: '#fff' }}>
+                {isEditMode ? 'Edit Product' : 'Add Product'}
+              </DialogTitle>
+              <DialogContent sx={{ padding: 2, backgroundColor: '#f4f1ea', borderRadius: '16px' }}>
+                <TextField
+                  name="name"
+                  label="Name"
+                  value={currentProduct?.name || ''}
+                  onChange={handleInputChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                />
+                <FormControl fullWidth margin="normal" required>
+                  <InputLabel>Category</InputLabel>
+                  <Select
+                    name="category"
+                    value={currentProduct?.category || ''}
+                    onChange={handleInputChange}
+                    label="Category"
+                  >
+                    {categories.map(category => (
+                      <MenuItem key={category.value} value={category.value}>
+                        {category.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <TextField
+                  name="price"
+                  label="Price"
+                  type="number"
+                  value={currentProduct?.price || ''}
+                  onChange={handleInputChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                />
+                <TextField
+                  name="stock"
+                  label="Stock"
+                  type="number"
+                  value={currentProduct?.stock || ''}
+                  onChange={handleInputChange}
+                  fullWidth
+                  margin="normal"
+                  required
+                />
+                <TextField
+                  name="image"
+                  label="Image URL"
+                  value={currentProduct?.image || ''}
+                  onChange={handleInputChange}
+                  fullWidth
+                  margin="normal"
+                />
+              </DialogContent>
+              <DialogActions sx={{ backgroundColor: '#f4f1ea', padding: 1 }}>
+                <Button onClick={handleDialogClose} sx={{ color: '#6d4c41', '&:hover': { color: '#8d6e63' } }}>Cancel</Button>
+                <Button onClick={handleSave} sx={{ backgroundColor: '#6d4c41', color: '#fff', '&:hover': { backgroundColor: '#8d6e63' } }}>
+                  {isEditMode ? 'Update' : 'Save'}
+                </Button>
+              </DialogActions>
+            </Dialog>
+          )}
+        </AnimatePresence>
 
-        <Snackbar open={!!error} autoHideDuration={6000} onClose={handleCloseError}>
+        <Snackbar
+          open={!!error}
+          autoHideDuration={6000}
+          onClose={handleCloseError}
+          component={motion.div}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+        >
           <Alert onClose={handleCloseError} severity="error">{error}</Alert>
         </Snackbar>
 
-        <Snackbar open={!!successMessage} autoHideDuration={6000} onClose={handleCloseSuccess}>
+        <Snackbar
+          open={!!successMessage}
+          autoHideDuration={6000}
+          onClose={handleCloseSuccess}
+          component={motion.div}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+        >
           <Alert onClose={handleCloseSuccess} severity="success">{successMessage}</Alert>
         </Snackbar>
       </Container>
