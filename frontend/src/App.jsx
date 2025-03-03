@@ -2,7 +2,6 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Login from './components/Login';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './components/Home';
-
 import Navbar from './components/Navbar';
 import ManageMenu from './components/ManageMenu';
 import Inventory from './components/Inventory';

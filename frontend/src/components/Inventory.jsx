@@ -27,6 +27,8 @@ const Inventory = () => {
     const [cart, setCart] = useState([]);
     const [showReceipt, setShowReceipt] = useState(false);
     const [receiptData, setReceiptData] = useState(null);
+    const [addSnackbarOpen, setAddSnackbarOpen] = useState(false);
+    const [removeSnackbarOpen, setRemoveSnackbarOpen] = useState(false);
 
     useEffect(() => {
         fetchProducts();
@@ -53,10 +55,17 @@ const Inventory = () => {
         } else {
             setCart([...cart, { ...product, quantity: 1 }]);
         }
+        setSnackbarMessage(`เพิ่ม ${product.name} ลงตะกร้าเรียบร้อย`);
+        setSnackbarSeverity('success');
+        setAddSnackbarOpen(true);
     };
 
     const removeFromCart = (productId) => {
+        const removedProduct = cart.find(item => item.id === productId);
         setCart(cart.filter(item => item.id !== productId));
+        setSnackbarMessage(`ลบ ${removedProduct.name} ออกจากตะกร้าเรียบร้อย`);
+        setSnackbarSeverity('error');
+        setRemoveSnackbarOpen(true);
     };
 
     const updateQuantity = (productId, quantity) => {
@@ -101,6 +110,8 @@ const Inventory = () => {
 
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
+        setAddSnackbarOpen(false);
+        setRemoveSnackbarOpen(false);
     };
 
     const handleCategoryChange = (categoryValue) => {
@@ -442,7 +453,7 @@ const Inventory = () => {
                             fontFamily: 'cursive',
                             fontSize: '15px',
                             borderRadius: '20px',
-                            color: '#fff',
+                            color: '#f0f0f0',
                             '&:hover': {
                                 backgroundColor: '#5d4037',
                             },
@@ -464,6 +475,36 @@ const Inventory = () => {
                 <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbarSeverity}
+                    sx={{ width: '240px' }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
+            <Snackbar
+                open={addSnackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity="success"
+                    sx={{ width: '240px' }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
+            <Snackbar
+                open={removeSnackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity="error"
                     sx={{ width: '240px' }}
                 >
                     {snackbarMessage}
