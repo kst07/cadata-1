@@ -126,39 +126,124 @@ const Inventory = () => {
         if (!receiptData) return;
 
         const content = `
-            <html>
-                <head>
-                    <title>ใบเสร็จ</title>
-                    <style>
-                        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
-                        body { font-family: 'Sarabun', sans-serif; padding: 20px; }
-                        h1 { color: #4E342E; text-align: center; }
-                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                        th { background-color: #6d4c41; color: white; }
-                        .total { font-weight: bold; margin-top: 10px; }
-                        .date-time { margin-top: 5px; font-size: 0.9em; }
-                    </style>
-                </head>
-                <body>
-                    <h1>สลิปการชำระเงิน</h1>
-                    <table>
-                        <tr>
-                            <th>สินค้า</th>
-                            <th>จำนวน</th>
-                            <th>ราคา</th>
-                        </tr>
-                        ${receiptData.items.map(item => `
+           <html>
+                    <head>
+                        <title>ใบเสร็จ</title>
+                        <style>
+                            @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+                            body { 
+                                font-family: 'Sarabun', sans-serif; 
+                                padding: 20px;
+                                max-width: 300px;
+                                margin: 0 auto;
+                            }
+                            .header {
+                                text-align: center;
+                                border-bottom: 2px dashed #6d4c41;
+                                padding-bottom: 15px;
+                                margin-bottom: 20px;
+                            }
+                            .logo {
+                                width: 80px;
+                                margin-bottom: 10px;
+                            }
+                            .shop-name {
+                                color: #6d4c41;
+                                font-size: 24px;
+                                font-weight: bold;
+                                margin: 5px 0;
+                            }
+                            .shop-detail {
+                                font-size: 12px;
+                                color: #666;
+                                margin: 3px 0;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin: 15px 0;
+                            }
+                            th {
+                                background-color: #6d4c41;
+                                color: white;
+                                padding: 8px;
+                                text-align: left;
+                            }
+                            td {
+                                padding: 8px;
+                                border-bottom: 1px solid #ddd;
+                            }
+                            .total-section {
+                                background-color: #f5f5f5;
+                                padding: 15px;
+                                border-radius: 5px;
+                                margin: 15px 0;
+                            }
+                            .thank-you {
+                                text-align: center;
+                                color: #6d4c41;
+                                font-weight: bold;
+                                margin-top: 20px;
+                                border-top: 2px dashed #6d4c41;
+                                padding-top: 15px;
+                            }
+                            .text-right {
+                                text-align: right;
+                            }
+                            .item-name {
+                                max-width: 150px;
+                                word-wrap: break-word;
+                            }
+                            @media print {
+                                body { 
+                                    -webkit-print-color-adjust: exact; 
+                                    print-color-adjust: exact;
+                                }
+                                .no-print { display: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <img src="https://cdn-icons-png.flaticon.com/512/924/924514.png" class="logo" alt="Café Logo">
+                            <div class="shop-name">Coffee </div>
+                            <div class="shop-detail">ที่อยู่: 123 ต.พังโคน อ.พังโคน สกลนคร</div>
+                            <div class="shop-detail">โทร: 089-***-****</div>
+                        </div>
+                        
+                        <table>
                             <tr>
-                                <td>${item.name}</td>
-                                <td>${item.quantity}</td>
-                                <td>${item.price * item.quantity} บาท</td>
+                                <th>สินค้า</th>
+                                <th>จำนวน</th>
+                                <th class="text-right">ราคา</th>
                             </tr>
-                        `).join('')}
-                    </table>
-                    <div class="total">ยอดรวม: ${receiptData.total} บาท</div>
-                    <div class="date-time">วันที่: ${receiptData.date}</div>
-                    <div class="date-time">เวลา: ${receiptData.time}</div>
+                            ${receiptData.items.map(item => `
+                                <tr>
+                                    <td class="item-name">${item.name}</td>
+                                    <td>${item.quantity}</td>
+                                    <td class="text-right">${(item.price * item.quantity).toLocaleString()} บาท</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+        
+                        <div class="total-section">
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <div>รวมทั้งหมด:</div>
+                                <div>${receiptData.total.toLocaleString()} บาท</div>
+                            </div>
+                            
+                            
+                        </div>
+        
+                        <div class="shop-detail" style="text-align: center;">
+                            <div>วันที่ออกใบเสร็จ: ${receiptData.date}</div>
+                            <div>เวลา: ${receiptData.time}</div>
+                        </div>
+        
+                        <div class="thank-you">
+                            ขอบคุณที่ใช้บริการครับ/ค่ะ
+                            <div style="font-size: 12px; margin-top: 5px;">*สินค้าไม่สามารถคืนได้*</div>
+                        </div>
                 </body>
             </html>
         `;

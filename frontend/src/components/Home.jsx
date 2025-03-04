@@ -160,7 +160,7 @@ const Home = (props) => {
               "&:hover": { background: "#4E342E" },
             }}
           >
-            จัดการสินค้า
+            สินค้า
           </Button>
         </Box>
       </Box>
